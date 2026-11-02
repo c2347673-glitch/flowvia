@@ -673,17 +673,45 @@
     document.getElementById("an").textContent =
       new Date().getFullYear();
 
-    document.getElementById("formular-cerere").addEventListener(
-      "submit",
-      function(event) {
-        event.preventDefault();
+document.getElementById("formular-cerere").addEventListener( "submit", async function(event) { event.preventDefault();
+const form = event.currentTarget;
+const buton = form.querySelector('button[type="submit"]');
+const mesaj = form.querySelector(".form-note");
 
-        alert(
-          "Formularul este în curs de configurare. " +
-          "Trimiterea automată a cererilor va fi activată ulterior."
-        );
-      }
-    );
+buton.disabled = true;
+buton.textContent = "Se trimite...";
+mesaj.textContent = "Solicitarea este în curs de trimitere.";
+
+const date = {
+  nume: form.elements["nume"].value.trim(),
+  afacere: form.elements["afacere"].value.trim(),
+  telefon: form.elements["telefon"].value.trim(),
+  serviciu: form.elements["serviciu"].value,
+  detalii: form.elements["detalii"].value.trim()
+};
+
+try {
+  await fetch("https://hook.eu1.make.com/vjixzta2rssa36siaa5bmqi2e1c2nk13", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
+    body: JSON.stringify(date)
+  });
+
+  mesaj.textContent =
+    "Cererea a fost trimisă. Te vom contacta în curând.";
+  form.reset();
+
+} catch (error) {
+  mesaj.textContent =
+    "Trimiterea a eșuat. Te rugăm să încerci din nou.";
+} finally {
+  buton.disabled = false;
+  buton.textContent = "Solicită o consultație ↗";
+}
+} );
   </script>
 </body>
 </html>
